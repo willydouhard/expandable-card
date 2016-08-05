@@ -6,6 +6,7 @@
   "type": "git",
   "url": "git://github.com/willydouhard/expandable-card.git"
 },
+"license": "MIT",
   "keywords": ["web-components"],
   "name": "expandable-card",
   "description": "A paper-card that can expand and fit its container",
