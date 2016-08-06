@@ -1,11 +1,10 @@
 | Custom property | Description | Default |
-| --- | --- | --- |
-| `--paper-card-background-color` | The background color of the card | `--primary-background-color` |
-| `--paper-card-header-color` | The color of the header text | `#000` |
-| `--paper-card-header` | Mixin applied to the card header section | `{}` |
-| `--paper-card-header-text` | Mixin applied to the title in the card header section | `{}` |
-| `--paper-card-header-image` | Mixin applied to the image in the card header section | `{}` |
-| `--paper-card-header-image-text` | Mixin applied to the text overlapping the image in the card header section | `{}` |
-| `--paper-card-content` | Mixin applied to the card content section | `{}` |
-| `--paper-card-actions` | Mixin applied to the card action section | `{}` |
-| `--paper-card` | Mixin applied to the card | `{}` |
+| ----------------|-------------|---------- |
+| `--card-width` | Width of the card when retracted | `300px` |
+| `--card-height` | Height of the card when retracted | `200px` |
+| `--card-font-size` | Font size of the card | `3em` |
+| `--card-color` | Card global color | `#000` |
+| `--card-button-background-color` | paper-button background color | `#fff` |
+| `--card-background-color` | Background color of the card | `#fff` |
+| `--card-header-background-color` | Background color for the header when the card is expanded | `#607D8B` |
+| `--card-header-color` | Header color | `#fff` |
