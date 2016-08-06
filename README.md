@@ -11,11 +11,11 @@ Example:
 </expandable-card>
 ```
 
-Its not really possible to think of all the usecase for this type of component.
+Its not possible to think of all the use case for this type of component.
 Hence, you should really customize it to fit your needs.
 Maybe you want another element of your card to be animated instead of the header while expanding,
 or maybe you want to pass an image property for your card.
-Dont be afraid to tweek this component as you want.
+Don't be afraid to tweak this component as you want.
 
 `expandable-card` by itself is not very useful, because you will probably want
 to use more than one. To get multiple `expandable-card` that expands to fit a container
