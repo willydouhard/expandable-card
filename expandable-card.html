@@ -5,20 +5,58 @@
 <link rel="import" href="../iron-icons/iron-icons.html" >
 
 <dom-module id="expandable-card">
+<!--
+`expandable-card` is a card that can expand (like you see on mobile native apps).
+
+Example:
+
+```html
+<expandable-card
+  retracted-title="Retracted title"
+  retracted-content="Retracted content"
+  expanded-title="Expanded title"
+  expanded-content="Expanded content">
+</expandable-card>
+```
+
+Its not really possible to think of all the usecase for this type of component.
+Hence, you should really customize it to fit your needs.
+Maybe you want another element of your card to be animated instead of the header while expanding,
+or maybe you want to pass an image property for your card.
+Dont be afraid to tweek this component as you want.
+
+`expandable-card` by itself is not very useful, because you will probably want
+to use more than one. To get multiple `expandable-card` that expands to fit a container
+see [expandable-card-container](https://customelements.io/willydouhard/expandable-card-container/)
+
+### Styling
+The following custom properties and mixins are available for styling:
+Custom property | Description | Default
+----------------|-------------|----------
+`--card-width` | Width of the card when retracted | `300px`
+`--card-height` | Height of the card when retracted | `200px`
+`--card-font-size` | Font size of the card | `3em`
+`--card-color` | Card global color | `#000`
+`--card-button-background-color` | paper-button background color | `#fff`
+`--card-background-color` | Background color of the card | `#fff`
+`--card-header-background-color` | Background color for the header when the card is expanded | `#607D8B`
+`--card-header-color` | Header color | `#fff`
+@demo demo/index.html
+-->
 	<template>
 	<style>
 	:host {
 		display: block;
 		position: relative;
 		z-index: 1;
-		width: 300px;
-		height: 200px;
+		width: var(--card-width, 300px);
+		height: var(--card-height, 200px);
 		display: flex;
 		align-items: center;
 		justify-content: center;
 		color: var(--card-color, #000);
 		font-family: 'Roboto';
-		font-size: 3em;
+		font-size: var(--card-font-size, 3em);
 	}
 
 	:host.host_expanded{
@@ -32,7 +70,7 @@
 	}
 
 	paper-button {
-		background-color: var(--card-background-color, #fff);
+		background-color: var(--card-button-background-color, #fff);
 		color: var(--card-color, #000);
 	}
 
@@ -118,7 +156,7 @@
 	.container__header{
 		height: 70px;
 		display: flex;
-		color: #fff;
+		color: var(--card-header-color, #fff);
 		background-color: var(--card-header-background-color, #607D8B);
 		justify-content: space-between;
 		align-items: center;
@@ -139,6 +177,7 @@
 
 	</style>
 
+	<!-- Content displayed when retracted -->
 	<div id="retracted-content" class="container">
 		<paper-card heading="[[retractedTitle]]">
 			<div class="card-content">{{retractedContent}}</div>
@@ -148,6 +187,7 @@
 		</paper-card>
 	</div>
 
+	<!-- Content displayed while expanding -->
 	<div id="placeholder-content" class="container">
 		<div id="placeholder-content__header" class="container__header"></div>
 		<paper-card id="placeholder-content__paper-card">
@@ -155,6 +195,7 @@
 		</paper-card>
 	</div>
 
+	<!-- Content displayed when expanded -->
 	<div id="expanded-content" class="container">
 		<div class="container__header">
 				<paper-icon-button on-tap="toggle" class="container__header__side" noink icon="arrow-back"></paper-icon-button>
@@ -233,6 +274,7 @@ Polymer({
 	attached: function(){
 		this.initalOverflow = document.body.style.overflow;
 	},
+	// Top level function (the only one you should call outside this component)
 	toggle: function(){
 
 		var _this = this;
