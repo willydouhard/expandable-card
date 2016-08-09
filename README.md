@@ -1,3 +1,5 @@
+[![Build Status](https://travis-ci.org/willydouhard/expandable-card.svg?branch=master)](https://travis-ci.org/willydouhard/expandable-card)
+
 `expandable-card` is a card that can expand (like you see on mobile native apps).
 
 Example:
