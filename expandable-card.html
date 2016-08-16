@@ -6,6 +6,14 @@
 
 <dom-module id="expandable-card">
 <!--
+WARNING: This component is relying on the web animation api. The poly fill is in the component dependencies, so you just have to include it in your index.html file.
+
+Example:
+
+```html
+<script src="bower_components/web-animations-js/web-animations-next-lite.min.js"></script>
+```
+
 `expandable-card` is a card that can expand (like you see on mobile native apps).
 
 Example:
@@ -44,7 +52,6 @@ The following custom properties and mixins are available for styling:
 | `--card-header-color` | Header color | `#fff` |
 
 @demo demo/index.html
-
 -->
 	<template>
 	<style>
@@ -157,7 +164,6 @@ The following custom properties and mixins are available for styling:
 	}
 
 	.container__header{
-		height: 70px;
 		display: flex;
 		color: var(--card-header-color, #fff);
 		background-color: var(--card-header-background-color, #607D8B);
@@ -200,7 +206,7 @@ The following custom properties and mixins are available for styling:
 
 	<!-- Content displayed when expanded -->
 	<div id="expanded-content" class="container">
-		<div class="container__header">
+		<div id="expanded-content__header" class="container__header">
 				<paper-icon-button on-tap="toggle" class="container__header__side" noink icon="arrow-back"></paper-icon-button>
 			<div>{{expandedTitle}}</div>
 			<div class="container__header__side"></div>
@@ -226,25 +232,29 @@ Polymer({
             expandedContent: {
                   type: String
             },
-		expanded: {
+		headerHeight: {
+			type: Number,
+			value: 70
+		},
+		_expanded: {
 			type: Boolean,
 			value: false
 		},
-		animating: {
+		_animating: {
 			type: Boolean,
 			value: false
 		},
-		EXPANDING_EVENT: {
+		_EXPANDING_EVENT: {
 			type: String,
 			value: 'expanding',
 			readOnly: true
 		},
-		RETRACTING_EVENT: {
+		_RETRACTING_EVENT: {
 			type: String,
 			value: 'retracting',
 			readOnly: true
 		},
-		contentAnimationOptions: {
+		_contentAnimationOptions: {
 			type: Object,
 			value: {
 			  duration: 100,
@@ -255,7 +265,7 @@ Polymer({
 			  fill: 'forwards'
 			}
 		},
-		cardAnimationOptions: {
+		_cardAnimationOptions: {
 			type: Object,
 			value: {
                     duration: 300,
@@ -266,16 +276,14 @@ Polymer({
    			  fill: 'forwards'
 			}
 		},
-		initalOverflow: {
+		_initalOverflow: {
 			type: String
-		},
-		headerHeight: {
-			type: Number,
-			value: 70
 		}
 	},
 	attached: function(){
-		this.initalOverflow = document.body.style.overflow;
+		this._initalOverflow = document.body.style.overflow;
+		this.$['placeholder-content__header'].style.height = this.headerHeight+'px';
+		this.$['expanded-content__header'].style.height = this.headerHeight+'px';
 	},
 	// Top level function (the only one you should call outside this component)
 	toggle: function(){
@@ -283,8 +291,8 @@ Polymer({
 		var _this = this;
 
 		return new Promise(function(resolve, reject){
-			if(_this.animating) return;
-			_this.animating = true;
+			if(_this._animating) return;
+			_this._animating = true;
 
 			document.body.style.overflow = 'hidden';
 			_this._toggleContent(0)
@@ -294,7 +302,7 @@ Polymer({
 					_this._toggleContent(1)
 					.then(function(){
 						if(!_this.expanded) {
-							document.body.style.overflow = _this.initalOverflow;
+							document.body.style.overflow = _this._initalOverflow;
 							_this.$['placeholder-content__paper-card'].style.borderRadius = '2px';
 							_this.$['expanded-content__content'].style.overflow = 'hidden';
 						}
@@ -302,7 +310,7 @@ Polymer({
 							_this.$['placeholder-content__paper-card'].style.borderRadius = '0px';
 						}
 						_this.$['placeholder-content__header'].style.height = _this.headerHeight+'px';
-						_this.animating = false;
+						_this._animating = false;
 						return resolve();
 					})
 				})
@@ -314,7 +322,7 @@ Polymer({
 	_toggleContent: function(value){
 		var _this = this;
 		return new Promise(function(resolve, reject){
-			var target = (_this.expanded) ? _this.children['expanded-content'] : _this.children['retracted-content'];
+			var target = (_this._expanded) ? _this.children['expanded-content'] : _this.children['retracted-content'];
 			var reversedValue = (value) ? 0 : 1;
 			if(value) target.style.display = 'flex';
 			_this._promoteElement(target);
@@ -324,7 +332,7 @@ Polymer({
 				    { opacity: reversedValue, offset: 0 },
 				    { opacity: value, offset: 1 }
 			    ],
-			    _this.contentAnimationOptions
+			    _this._contentAnimationOptions
 		    );
 		    player.onfinish = _this._onContentAnimationEnd.bind(_this, target, value, resolve);
 			})
@@ -335,7 +343,7 @@ Polymer({
 	_onContentAnimationEnd: function(target, value, resolve){
 		this._demoteElement(target);
 		if(!value) target.style.display = 'none';
-		else if(value && this.expanded){
+		else if(value && this._expanded){
 			this.$['expanded-content__content'].style.overflow = 'auto';
 		}
 		return resolve();
@@ -344,8 +352,8 @@ Polymer({
 		var _this = this;
 		return new Promise(function(resolve, reject){
 			var first, last, evt;
-			if(_this.expanded){
-				evt = _this.RETRACTING_EVENT;
+			if(_this._expanded){
+				evt = _this._RETRACTING_EVENT;
 				var otherCards = _this.parentNode.querySelectorAll('expandable-card');
 				var index = Array.prototype.indexOf.call(otherCards, _this);
                         if(index - 1 < 0){
@@ -361,21 +369,21 @@ Polymer({
 
 			}
 			else{
-				evt = _this.EXPANDING_EVENT;
+				evt = _this._EXPANDING_EVENT;
 				first = _this.getBoundingClientRect();
 				_this.classList.add('host_expanded');
 				last = _this.getBoundingClientRect();
 				_this.style.zIndex = 10;
 			}
 			_this.fire(evt, {el: _this});
-			var invertCard = _this._computeCardInterpolation(first, last, !_this.expanded);
+			var invertCard = _this._computeCardInterpolation(first, last, !_this._expanded);
 			_this.style.transform = invertCard;
 			var invertPlaceholderCard = _this._setPlaceholderCardStyle(evt, first.height / last.height);
 			_this._promoteElement(_this);
 			_this._promoteElement(_this.$['placeholder-content__paper-card']);
 					requestAnimationFrame(function(){
-						var placeholderCardTranslation = (evt === _this.EXPANDING_EVENT) ? _this.headerHeight / 2 : 0;
-						var placeholderCardScaleY = (evt === _this.EXPANDING_EVENT) ?  1 - _this.headerHeight  / (last.height) : 1;
+						var placeholderCardTranslation = (evt === _this._EXPANDING_EVENT) ? _this.headerHeight / 2 : 0;
+						var placeholderCardScaleY = (evt === _this._EXPANDING_EVENT) ?  1 - _this.headerHeight  / (last.height) : 1;
 
 						var cardKF = [
 						  { transform: invertCard },
@@ -388,8 +396,8 @@ Polymer({
 						];
 
 						var kEffects = [
-						  new KeyframeEffect(_this.$['placeholder-content__paper-card'], placeholderCardKF, _this.cardAnimationOptions),
-						  new KeyframeEffect(_this, cardKF, _this.cardAnimationOptions)
+						  new KeyframeEffect(_this.$['placeholder-content__paper-card'], placeholderCardKF, _this._cardAnimationOptions),
+						  new KeyframeEffect(_this, cardKF, _this._cardAnimationOptions)
 						];
 
 						var group = new GroupEffect(kEffects);
@@ -402,16 +410,16 @@ Polymer({
 	_onCardTransitionEnd: function(resolve){
 		this._demoteElement(this);
 		this._demoteElement(this.$['placeholder-content__paper-card']);
-		this.expanded = !this.expanded;
-		if(!this.expanded) this.style.zIndex = 2;
+		this._expanded = !this._expanded;
+		if(!this._expanded) this.style.zIndex = 2;
 		return resolve();
 	},
 	_setPlaceholderCardStyle: function(evt, ratio){
 		var transform;
-		if(evt === this.EXPANDING_EVENT){
+		if(evt === this._EXPANDING_EVENT){
 			transform = 'translateY(0px)';
 			this.$['placeholder-content__paper-card'].style.transform = transform;
-			this.$['placeholder-content__header'].style.height = this.headerHeight;
+			this.$['placeholder-content__header'].style.height = this.headerHeight+'px';
 		}
 		else{
 			var headerRatio = this.headerHeight / ratio;

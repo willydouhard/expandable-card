@@ -1,5 +1,13 @@
 [![Build Status](https://travis-ci.org/willydouhard/expandable-card.svg?branch=master)](https://travis-ci.org/willydouhard/expandable-card)
 
+WARNING: This component is relying on the web animation api. The poly fill is in the component dependencies, so you just have to include it in your index.html file.
+
+Example:
+
+```html
+<script src="bower_components/web-animations-js/web-animations-next-lite.min.js"></script>
+```
+
 `expandable-card` is a card that can expand (like you see on mobile native apps).
 
 Example:
