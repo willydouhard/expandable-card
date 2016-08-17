@@ -1,5 +1,7 @@
 [![Build Status](https://travis-ci.org/willydouhard/expandable-card.svg?branch=master)](https://travis-ci.org/willydouhard/expandable-card)
 
+_[Demo and API docs](https://willydouhard.github.io/expandable-card/components/expandable-card/)_
+
 WARNING: This component is relying on the web animation api. The poly fill is in the component dependencies, so you just have to include it in your index.html file.
 
 Example:
@@ -44,5 +46,3 @@ The following custom properties and mixins are available for styling:
 | `--card-background-color` | Background color of the card | `#fff` |
 | `--card-header-background-color` | Background color for the header when the card is expanded | `#607D8B` |
 | `--card-header-color` | Header color | `#fff` |
-
-@demo demo/index.html
