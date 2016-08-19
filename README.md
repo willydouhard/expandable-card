@@ -15,19 +15,31 @@ Example:
 Example:
 
 ```html
-<expandable-card
-  retracted-title="Retracted title"
-  retracted-content="Retracted content"
-  expanded-title="Expanded title"
-  expanded-content="Expanded content">
+<expandable-card>
+    Content displayed when retracted
+    <div id="retracted" class="container">
+	    <paper-card heading="Retracted title">
+		    <div class="card-content">Retracted content</div>
+		    <div class="card-actions">
+				    <paper-button class="toggle" noink>Expand</paper-button>
+		    </div>
+	    </paper-card>
+    </div>
+
+     Content displayed when expanded
+     <div id="expanded" class="container">
+		<div id="expandedHeader" class="container-header">
+			<paper-icon-button class="container-header-side toggle" noink icon="arrow-back"></paper-icon-button>
+			<div>Expanded title</div>
+			<div class="container-header-side"></div>
+		</div>
+		<div id="expandedContent">Expanded content</div>
+     </div>
 </expandable-card>
 ```
 
-Its not possible to think of all the use case for this type of component.
-Hence, you should really customize it to fit your needs.
-Maybe you want another element of your card to be animated instead of the header while expanding,
-or maybe you want to pass an image property for your card.
-Don't be afraid to tweak this component as you want.
+Add a toggle class to the elements who are supposed to trigger a toggle.
+You can custom the titles and contents as you wish.
 
 `expandable-card` by itself is not very useful, because you will probably want
 to use more than one. To get multiple `expandable-card` that expands to fit a container
