@@ -16,7 +16,7 @@ Example:
 
 ```html
 <expandable-card>
-    Content displayed when retracted
+      <!-- Content displayed when retracted -->
     <div id="retracted" class="container">
 	    <paper-card heading="Retracted title">
 		    <div class="card-content">Retracted content</div>
@@ -26,7 +26,7 @@ Example:
 	    </paper-card>
     </div>
 
-     Content displayed when expanded
+    <!-- Content displayed when expanded -->
      <div id="expanded" class="container">
 		<div id="expandedHeader" class="container-header">
 			<paper-icon-button class="container-header-side toggle" noink icon="arrow-back"></paper-icon-button>
