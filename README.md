@@ -43,7 +43,7 @@ You can custom the titles and contents as you wish.
 
 `expandable-card` by itself is not very useful, because you will probably want
 to use more than one. To get multiple `expandable-card` that expands to fit a container
-see [expandable-card-container](https://customelements.io/willydouhard/expandable-card-container/)
+see [expandable-card-container](https://github.com/willydouhard/expandable-card-container/)
 
 ### Styling
 The following custom properties and mixins are available for styling:
