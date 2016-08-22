@@ -1,0 +1,451 @@
+<link rel="import" href="../polymer/polymer.html">
+<link rel="import" href="../paper-card/paper-card.html">
+<link rel="import" href="../paper-button/paper-button.html">
+<link rel="import" href="../paper-icon-button/paper-icon-button.html">
+<link rel="import" href="../iron-icons/iron-icons.html" >
+
+<!--
+WARNING: This component is relying on the web animation api. The poly fill is in the component dependencies, so you just have to include it in your index.html file.
+
+Example:
+
+```html
+<script src="bower_components/web-animations-js/web-animations-next-lite.min.js"></script>
+```
+
+`expandable-card` is a card that can expand (like you see on mobile native apps).
+
+Example:
+
+```html
+<expandable-card>
+    Content displayed when retracted
+    <div id="retracted" class="container">
+	    <paper-card heading="Retracted title">
+		    <div class="card-content">Retracted content</div>
+		    <div class="card-actions">
+				    <paper-button class="toggle" noink>Expand</paper-button>
+		    </div>
+	    </paper-card>
+    </div>
+
+     Content displayed when expanded
+     <div id="expanded" class="container">
+		<div id="expandedHeader" class="container-header">
+			<paper-icon-button class="container-header-side toggle" noink icon="arrow-back"></paper-icon-button>
+			<div>Expanded title</div>
+			<div class="container-header-side"></div>
+		</div>
+		<div id="expandedContent">Expanded content</div>
+     </div>
+</expandable-card>
+```
+
+Add a toggle class to the elements who are supposed to trigger a toggle.
+You can custom the titles and contents as you wish.
+
+`expandable-card` by itself is not very useful, because you will probably want
+to use more than one. To get multiple `expandable-card` that expands to fit a container
+see [expandable-card-container](https://customelements.io/willydouhard/expandable-card-container/)
+
+### Styling
+The following custom properties and mixins are available for styling:
+
+| Custom property | Description | Default |
+| ----------------|-------------|---------- |
+| `--card-width` | Width of the card when retracted | `300px` |
+| `--card-height` | Height of the card when retracted | `200px` |
+| `--card-font-size` | Font size of the card | `3em` |
+| `--card-color` | Card global color | `#000` |
+| `--card-button-background-color` | paper-button background color | `#fff` |
+| `--card-background-color` | Background color of the card | `#fff` |
+| `--card-header-background-color` | Background color for the header when the card is expanded | `#607D8B` |
+| `--card-header-color` | Header color | `#fff` |
+
+@demo demo/index.html
+-->
+
+<dom-module id="expandable-card">
+
+	<template>
+	<style>
+	:host {
+		display: block;
+		position: relative;
+		z-index: 1;
+		width: var(--card-width, 300px);
+		height: var(--card-height, 200px);
+		display: flex;
+		align-items: center;
+		justify-content: center;
+		color: var(--card-color, #000);
+		font-family: 'Roboto';
+		font-size: var(--card-font-size, 3em);
+	}
+
+	:host.host-expanded{
+		position: absolute;
+		top: 0;
+		right: 0;
+		bottom: 0;
+		left: 0;
+		width: auto;
+		height: auto;
+	}
+
+	::content paper-button {
+		background-color: var(--card-button-background-color, #fff);
+		color: var(--card-color, #000);
+	}
+
+	::content paper-card{
+		flex-grow: 1;
+		display: flex;
+		flex-direction: column;
+		background-color: var(--card-background-color, #fff);
+	}
+
+	::content paper-card .header{
+		color: var(--card-color, #000);
+	}
+
+	::content paper-card .card-content{
+		flex-grow: 1;
+	}
+
+	::content paper-card .card-actions{
+		text-align: right;
+	}
+
+	a:link {
+		color: var(--card-color, #000);
+		text-decoration: none;
+	}
+
+	/* visited link */
+	a:visited {
+		color: var(--card-color, #000);
+		text-decoration: none;
+	}
+
+	/* mouse over link */
+	a:hover {
+		color: var(--card-color, #000);
+		text-decoration: none;
+	}
+
+	/* selected link */
+	a:active {
+		color: var(--card-color, #000);
+		text-decoration: none;
+	}
+
+	::content .container{
+		font-size: 16px;
+		position: relative;
+		z-index: 2;
+		width: 100%;
+		height: 100%;
+	}
+
+	::content #retracted{
+		opacity: 1;
+		display: flex;
+	}
+
+	::content #expanded{
+		opacity: 0;
+		display: none;
+		flex-direction: column;
+	}
+
+	::content #placeholder{
+		position: absolute;
+		top: 0;
+		left: 0;
+		z-index: 1;
+		flex-direction: column;
+		display: flex;
+	}
+
+	::content #placeholderHeader{
+		position: absolute;
+		width: 100%;
+	}
+
+	::content #placeholder paper-card{
+		will-change: transform;
+	}
+
+	::content .container-header{
+		display: flex;
+		color: var(--card-header-color, #fff);
+		background-color: var(--card-header-background-color, #607D8B);
+		justify-content: space-between;
+		align-items: center;
+	}
+
+	::content .container-header-side {
+		width: 40px;
+	}
+
+	::content #expandedContent{
+		position: relative;
+		flex-grow: 1;
+		display: flex;
+		justify-content: center;
+		align-items: center;
+		background-color: var(--card-background-color, #fff);
+	}
+
+	</style>
+
+	<content></content>
+
+
+</template>
+<script>
+'use strict';
+
+Polymer({
+	is: 'expandable-card',
+
+	properties: {
+		headerHeight: {
+			type: Number,
+			value: 70
+		},
+		_expanded: {
+			type: Boolean,
+			value: false
+		},
+		_animating: {
+			type: Boolean,
+			value: false
+		},
+		_EXPANDING_EVENT: {
+			type: String,
+			value: 'expanding',
+			readOnly: true
+		},
+		_RETRACTING_EVENT: {
+			type: String,
+			value: 'retracting',
+			readOnly: true
+		},
+		_contentAnimationOptions: {
+			type: Object,
+			value: {
+			  duration: 100,
+			  easing: 'ease-in',
+			  delay: 0,
+			  iterations: 1,
+			  direction: 'normal',
+			  fill: 'forwards'
+			}
+		},
+		_cardAnimationOptions: {
+			type: Object,
+			value: {
+                    duration: 300,
+   			  easing: 'ease-in',
+   			  delay: 0,
+   			  iterations: 1,
+   			  direction: 'normal',
+   			  fill: 'forwards'
+			}
+		},
+		_initalOverflow: {
+			type: String
+		}
+	},
+	attached: function(){
+		this._initalOverflow = document.body.style.overflow;
+		this._insertPlaceholder();
+		this._addEvents();
+		this.children.placeholder.children.placeholderHeader.style.height = this.headerHeight+'px';
+		this.children.expanded.children.expandedHeader.style.height = this.headerHeight+'px';
+	},
+	_addEvents: function(){
+		var _this = this;
+		var toggles = Array.from(this.querySelectorAll('.toggle'));
+
+		toggles.forEach(function(toggle){
+			toggle.addEventListener('tap', function(){_this.toggle()});
+		})
+	},
+	_insertPlaceholder: function(){
+		var placeholder = document.createElement('div');
+		placeholder.id = 'placeholder';
+		placeholder.className = 'container';
+		placeholder.innerHTML = '<div id="placeholderHeader" class="container-header"></div>'+
+					'<paper-card id="placeholderPaperCard">'+
+						'<div class="card-content"></div>'+
+					'</paper-card>';
+		Polymer.dom(this).insertBefore(placeholder, this.children.expanded);
+		Polymer.dom.flush();
+	},
+	// Top level function (the only one you should call outside this component)
+	toggle: function(){
+
+		var _this = this;
+
+		return new Promise(function(resolve, reject){
+			if(_this._animating) return;
+			_this._animating = true;
+
+			document.body.style.overflow = 'hidden';
+			_this._toggleContent(0)
+			.then(function(){
+				_this._toggleCard()
+				.then(function(){
+					_this._toggleContent(1)
+					.then(function(){
+						if(!_this.expanded) {
+							document.body.style.overflow = _this._initalOverflow;
+							_this.children.placeholder.children.placeholderPaperCard.style.borderRadius = '2px';
+							_this.children.expanded.children.expandedContent.style.overflow = 'hidden';
+						}
+						else{
+							_this.children.placeholder.children.placeholderPaperCard.style.borderRadius = '0px';
+						}
+						_this.children.placeholder.children.placeholderHeader.style.height = _this.headerHeight+'px';
+						_this._animating = false;
+						return resolve();
+					})
+				})
+			})
+		})
+
+	},
+
+	_toggleContent: function(value){
+		var _this = this;
+		return new Promise(function(resolve, reject){
+			var target = (_this._expanded) ? _this.children.expanded : _this.children.retracted;
+			var reversedValue = (value) ? 0 : 1;
+			if(value) target.style.display = 'flex';
+			_this._promoteElement(target);
+			requestAnimationFrame(function(){
+				var player = target.animate(
+					[
+				    { opacity: reversedValue, offset: 0 },
+				    { opacity: value, offset: 1 }
+			    ],
+			    _this._contentAnimationOptions
+		    );
+		    player.onfinish = _this._onContentAnimationEnd.bind(_this, target, value, resolve);
+			})
+
+
+		});
+	},
+	_onContentAnimationEnd: function(target, value, resolve){
+		this._demoteElement(target);
+		if(!value) target.style.display = 'none';
+		else if(value && this._expanded){
+			this.children.expanded.children.expandedContent.style.overflow = 'auto';
+		}
+		return resolve();
+	},
+	_toggleCard: function(){
+		var _this = this;
+		return new Promise(function(resolve, reject){
+			var first, last, evt;
+			if(_this._expanded){
+				evt = _this._RETRACTING_EVENT;
+				var otherCards = _this.parentNode.querySelectorAll('expandable-card');
+				var index = Array.prototype.indexOf.call(otherCards, _this);
+                        if(index - 1 < 0){
+                              first = _this.getBoundingClientRect();
+                              _this.classList.remove('host-expanded');
+      				last = _this.getBoundingClientRect();
+                        }
+                        else {
+                              last = otherCards[(index-1)].getBoundingClientRect();
+                              first = _this.getBoundingClientRect();
+                              _this.classList.remove('host-expanded');
+                        }
+
+			}
+			else{
+				evt = _this._EXPANDING_EVENT;
+				first = _this.getBoundingClientRect();
+				_this.classList.add('host-expanded');
+				last = _this.getBoundingClientRect();
+				_this.style.zIndex = 10;
+			}
+			_this.fire(evt, {el: _this});
+			var invertCard = _this._computeCardInterpolation(first, last, !_this._expanded);
+			_this.style.transform = invertCard;
+			var invertPlaceholderCard = _this._setPlaceholderCardStyle(evt, first.height / last.height);
+			_this._promoteElement(_this);
+					requestAnimationFrame(function(){
+						var placeholderCardTranslation = (evt === _this._EXPANDING_EVENT) ? _this.headerHeight / 2 : 0;
+						var placeholderCardScaleY = (evt === _this._EXPANDING_EVENT) ?  1 - _this.headerHeight  / (last.height) : 1;
+
+						var cardKF = [
+						  { transform: invertCard },
+						  { transform: 'none' }
+						];
+
+						var placeholderCardKF = [
+							{ transform: invertPlaceholderCard },
+							{ transform: 'translateY('+placeholderCardTranslation+'px) scaleY('+placeholderCardScaleY+')' }
+						];
+
+						var kEffects = [
+						  new KeyframeEffect(_this.children.placeholder.children.placeholderPaperCard, placeholderCardKF, _this._cardAnimationOptions),
+						  new KeyframeEffect(_this, cardKF, _this._cardAnimationOptions)
+						];
+
+						var group = new GroupEffect(kEffects);
+						var player = document.timeline.play(group);
+						player.onfinish = _this._onCardTransitionEnd.bind(_this, resolve);
+					})
+
+		});
+	},
+	_onCardTransitionEnd: function(resolve){
+		this._demoteElement(this);
+		this._expanded = !this._expanded;
+		if(!this._expanded) this.style.zIndex = 2;
+		return resolve();
+	},
+	_setPlaceholderCardStyle: function(evt, ratio){
+		var transform;
+		if(evt === this._EXPANDING_EVENT){
+			transform = 'translateY(0px)';
+			this.children.placeholder.children.placeholderPaperCard.style.transform = transform;
+			this.children.placeholder.children.placeholderHeader.style.height = this.headerHeight+'px';
+		}
+		else{
+			var headerRatio = this.headerHeight / ratio;
+			transform ='translateY('+(headerRatio)+'px)';
+			this.children.placeholder.children.placeholderPaperCard.style.transform = transform;
+			this.children.placeholder.children.placeholderHeader.style.height = (headerRatio + 1)+'px';
+		}
+
+		return transform;
+	},
+	_computeCardInterpolation: function(first, last, expanding){
+		var scaleY = first.height / last.height;
+		var scaleX = first.width / last.width;
+
+		var translateX = ( ( last.width - first.width ) / 2 + ( last.left - first.left ) ) * -1;
+		var translateY = ( (last.height - first.height) / 2 + ( last.top - first.top ) ) * -1;
+
+		return 'translateX('+translateX+'px) translateY('+translateY+'px) scaleX('+scaleX+') scaleY('+scaleY+')';
+	},
+
+	_promoteElement: function(el){
+		el.style.willChange = 'transform';
+	},
+	_demoteElement: function(el){
+		el.style.willChange = 'initial';
+		el.style.transform = 'none';
+	}
+
+});
+</script>
+</dom-module>

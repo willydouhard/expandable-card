@@ -1,0 +1,52 @@
+<!doctype html>
+<html>
+  <head>
+    <title>expandable-card demo</title>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, minimum-scale=1.0, initial-scale=1, user-scalable=yes">
+    <script src="../../webcomponentsjs/webcomponents-lite.js"></script>
+    <script src="../../web-animations-js/web-animations-next-lite.min.js"></script>
+
+    <link rel="import" href="../../iron-demo-helpers/demo-pages-shared-styles.html">
+    <link rel="import" href="../../iron-demo-helpers/demo-snippet.html">
+
+    <link rel="import" href="../expandable-card.html">
+
+    <style is="custom-style" include="demo-pages-shared-styles">
+      body{
+            margin: 0;
+            padding: 0;
+            width: 100vw;
+            height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+      }
+    </style>
+  </head>
+  <body>
+
+        <expandable-card>
+             <!-- Content displayed when retracted -->
+       	<div id="retracted" class="container">
+       		<paper-card heading="Retracted title">
+       			<div class="card-content">Retracted content</div>
+       			<div class="card-actions">
+       					<paper-button class="toggle" noink>Expand</paper-button>
+       			</div>
+       		</paper-card>
+       	</div>
+
+             <!-- Content displayed when expanded -->
+             <div id="expanded" class="container">
+                    <div id="expandedHeader" class="container-header">
+                          <paper-icon-button class="container-header-side toggle" noink icon="arrow-back"></paper-icon-button>
+                          <div>Expanded title</div>
+                          <div class="container-header-side"></div>
+                    </div>
+                    <div id="expandedContent">Expanded content</div>
+             </div>
+       </expandable-card>
+
+  </body>
+</html>
