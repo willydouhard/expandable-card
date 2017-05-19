@@ -1,6 +1,4 @@
-[![Build Status](https://travis-ci.org/willydouhard/expandable-card.svg?branch=master)](https://travis-ci.org/willydouhard/expandable-card)
-
-_[Demo and API docs](https://willydouhard.github.io/expandable-card/components/expandable-card/)_
+_[Demo](https://willydouhard.github.io/expandable-card/components/expandable-card/demo)_
 
 WARNING: This component is relying on the web animation api. The poly fill is in the component dependencies, so you just have to include it in your index.html file.
 
